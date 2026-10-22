@@ -320,6 +320,7 @@ main { position: relative; z-index: 1; }
   --base-ry: 9;
   --z: 30px;
   padding: clamp(28px, 4vw, 52px);
+  container-type: inline-size; /* lets the name scale with this window, not the viewport */
 }
 /* headshot floats just above the window's top-right corner, ringed by a slow "gaze" reticle */
 .window--main .eyebrow { max-width: calc(100% - 150px); }
@@ -355,7 +356,8 @@ main { position: relative; z-index: 1; }
   margin: 0;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(44px, 6.6vw, 100px);
+  /* "Hosseini." is ~6.6em wide, so 14cqi keeps it inside the window at every size */
+  font-size: clamp(28px, 14cqi, 100px);
   line-height: 0.92;
   letter-spacing: -0.035em;
 }

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- EDIT: page title + description shown in Google results and link previews -->
+  <title>Arman Hosseini · Multimodal AI for Human Safety</title>
+  <meta name="description" content="Arman Hosseini, PhD candidate at the University of Virginia, builds AI systems that detect when humans are about to make dangerous decisions using real-time gaze and physiological sensing, VR and mixed reality.">
+  <meta property="og:title" content="Arman Hosseini · Multimodal AI for Human Safety">
+  <meta property="og:description" content="Real-time multimodal sensing, VR simulation and AI for safety-critical human-machine interfaces.">
+  <meta property="og:type" content="website">
+  <!-- EDIT: if the site address changes, update these three URLs -->
+  <link rel="canonical" href="https://armanhsi.github.io/">
+  <meta property="og:url" content="https://armanhsi.github.io/">
+  <meta property="og:image" content="https://armanhsi.github.io/assets/headshot.jpg">
+  <meta name="theme-color" content="#050912">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23050912'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%237FE7FF' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%237FE7FF'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- EDIT: bump ?v= on style.css and script.js after changing them, so visitors get the new files -->
+  <link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+
+  <!-- The wireframe 3D world behind the windows (drawn by script.js) -->
+  <canvas id="world" aria-hidden="true"></canvas>
+  <!-- Gaze cursor (desktop only) -->
+  <div class="gaze" aria-hidden="true"></div>
+
+  <!-- ============ STATUS BAR ============ -->
+  <header class="statusbar">
+    <a class="brand" href="#home" aria-label="Arman Hosseini, back to top">
+      <span class="brand-mark">AH</span>
+      <span class="brand-name">Arman Hosseini</span>
+    </a>
+    <div class="status-right">
+      <span class="status-item hide-sm"><span class="live-dot"></span>ORCL Lab · UVA</span>
+      <span class="status-item hide-sm" id="clock" title="Local time in Charlottesville">CVL --:--</span>
+      <!-- EDIT: put your CV PDF at assets/Arman_Hosseini_CV.pdf -->
+      <a class="chip" href="assets/Arman_Hosseini_CV.pdf" target="_blank" rel="noopener">CV ↓</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============ HERO ============ -->
+    <section id="home" class="hero" aria-label="Introduction">
+      <div class="scene" id="scene">
+
+        <!-- Main window -->
+        <article class="window window--main glass grab">
+          <!-- EDIT: headshot — replace assets/headshot.jpg (square photo, about 600×600) -->
+          <div class="avatar">
+            <img src="assets/headshot.jpg" alt="Portrait of Arman Hosseini" width="591" height="591">
+          </div>
+          <!-- EDIT: title line above your name -->
+          <p class="eyebrow">PhD Candidate · Systems &amp; Information Engineering</p>
+          <h1 class="hero-name">Arman<br>Hosseini<span>.</span></h1>
+          <!-- EDIT: research identity statement -->
+          <p class="hero-lede">I build AI systems that detect when humans are about to make <em>dangerous decisions</em>, using real-time multimodal sensing of gaze and physiological signals, with applications to any safety-critical human-machine interface.</p>
+          <div class="hero-actions">
+            <a class="btn btn--primary" href="#research">Explore research →</a>
+            <a class="btn" href="#publications">Publications</a>
+            <a class="btn btn--ghost" href="#contact">Get in touch</a>
+          </div>
+          <!-- EDIT: quick facts -->
+          <dl class="hero-meta">
+            <div><dt>Institution</dt><dd>University of Virginia</dd></div>
+            <div><dt>Lab</dt><dd>ORCL · Omni Reality &amp; Cognition</dd></div>
+            <div><dt>Advisor</dt><dd>Dr. Arsalan Heydarian</dd></div>
+          </dl>
+        </article>
+
+        <div class="side-stack">
+          <!-- Live signal window (synthetic demo data) -->
+          <aside class="window window--side window--signal glass grab" aria-label="Demo of the RIDER multimodal risk stream">
+            <div class="win-head">
+              <h2 class="win-title">RIDER · live</h2>
+              <span class="win-sub">CHI 2027</span>
+            </div>
+            <div class="signal-row"><span class="lbl">GAZE</span><canvas data-signal="gaze"></canvas><span class="val" id="v-gaze">—</span></div>
+            <div class="signal-row"><span class="lbl">EDA</span><canvas data-signal="eda"></canvas><span class="val" id="v-eda">—</span></div>
+            <div class="signal-row"><span class="lbl">HR</span><canvas data-signal="hr"></canvas><span class="val" id="v-hr">—</span></div>
+            <div class="risk" id="risk">
+              <div class="risk-top"><span>RISK INDEX</span><span class="risk-state" id="risk-state">NOMINAL</span></div>
+              <div class="risk-num" id="risk-num">0.18</div>
+              <div class="risk-bar"><i id="risk-bar"></i></div>
+            </div>
+            <p class="demo-note">Simulated stream, for illustration</p>
+          </aside>
+
+          <!-- EDIT: highlighted grant / news window -->
+          <aside class="window window--side window--grant glass grab">
+            <div class="win-head">
+              <span class="badge">NSF CPS #2553776</span>
+              <span class="win-sub">2026 →</span>
+            </div>
+            <h2 class="win-title">Adolescent micromobility safety</h2>
+            <p>An immersive VR e-scooter simulator on a 3-DOF motion platform, with multimodal AI risk prediction for young riders.</p>
+            <div class="grant-foot">
+              <a class="chip" href="#research">View project</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+      <a class="scroll-hint" href="#research">Scroll to enter</a>
+    </section>
+
+    <!-- ============ RESEARCH ============ -->
+    <section id="research" class="section">
+      <div class="section-head">
+        <p class="eyebrow">[ 01 ] Research</p>
+        <h2 class="section-title">Projects</h2>
+        <!-- EDIT: section intro -->
+        <p class="section-lede">Immersive simulators, sensing pipelines and AI models that see risk coming in time to act on it.</p>
+      </div>
+
+      <div class="project-grid">
+
+        <!-- PROJECT: RIDER (featured) ======================================
+             EDIT: to use a photo instead of the illustration, replace the <svg> with
+             <img src="assets/projects/rider.jpg" alt="..."> -->
+        <article class="card card--featured glass grab">
+          <div class="card-art">
+            <span class="art-label">Gaze × physiology → risk</span>
+            <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <!-- scanpath -->
+              <polyline class="a-dim" points="70,110 130,80 110,170 195,135 170,225 250,190"/>
+              <circle class="a-fill" cx="70" cy="110" r="10"/>
+              <circle class="a-fill" cx="130" cy="80" r="17"/>
+              <circle class="a-fill" cx="110" cy="170" r="8"/>
+              <circle class="a-fill" cx="195" cy="135" r="24"/>
+              <circle class="a-fill" cx="170" cy="225" r="12"/>
+              <circle class="a-hotfill" cx="250" cy="190" r="15"/>
+              <text class="a-txt" x="40" y="285">SCANPATH · 120 Hz</text>
+              <!-- signals -->
+              <text class="a-txt" x="300" y="42">GAZE</text>
+              <path class="a-line" d="M300 80 L330 80 L333 64 L368 64 L371 94 L408 94 L411 72 L448 72 L451 86 L488 86 L491 58 L520 58 L523 98 L580 98"/>
+              <text class="a-txt" x="300" y="122">EDA</text>
+              <path class="a-line" d="M300 168 Q340 166 370 163 T430 158 Q448 128 464 142 T500 146 Q520 116 536 128 T580 130"/>
+              <text class="a-txt" x="300" y="200">HR / HRV</text>
+              <path class="a-line" d="M300 238 L330 238 L336 222 L342 250 L348 238 L384 238 L390 222 L396 250 L402 238 L432 238 L438 218 L444 254 L450 238 L474 238 L480 214 L486 256 L492 238 L512 238 L518 210 L524 258 L530 238 L580 238"/>
+              <line class="a-faint" x1="300" y1="275" x2="580" y2="275"/>
+              <line class="a-hot a-flow" x1="512" y1="30" x2="512" y2="275"/>
+              <text class="a-txt-hot" x="420" y="296">ALERT · t − 1.8 s</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-status"><span class="state state--review">Under review · CHI 2027</span><span>Dissertation core</span></div>
+            <h3 class="card-title">RIDER: real-time multimodal risk detection for cyclists</h3>
+            <p class="card-text">RIDER fuses 120 Hz eye tracking with physiological signals (EDA, HR/HRV) in transformer-based sequence models that predict safety-critical rider states before a collision happens. It's the core of my dissertation on predicting cyclist risk behavior in immersive VR.</p>
+            <ul class="tags">
+              <li>Eye tracking</li><li>EDA</li><li>HR / HRV</li><li>Transformers</li><li>Sequence models</li><li>Immersive VR</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- PROJECT: NSF micromobility ===================================== -->
+        <article class="card glass grab">
+          <div class="card-art">
+            <span class="art-label">3-DOF motion platform</span>
+            <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <polygon class="a-dim" points="110,178 270,178 315,152 155,152"/>
+              <line class="a-line" x1="150" y1="172" x2="150" y2="140"/>
+              <line class="a-line" x1="282" y1="166" x2="282" y2="132"/>
+              <line class="a-line" x1="225" y1="155" x2="225" y2="118"/>
+              <polygon class="a-fill" points="110,142 270,142 315,116 155,116"/>
+              <circle class="a-line" cx="178" cy="110" r="9"/>
+              <circle class="a-line" cx="262" cy="108" r="9"/>
+              <path class="a-line" d="M184 104 L256 102 M258 102 L246 50 M232 50 L262 48"/>
+              <path class="a-hot" d="M168 128 l5 -3 l5 3 l5 -3 l5 3 M252 126 l5 -3 l5 3 l5 -3 l5 3"/>
+              <path class="a-dim" d="M335 64 A46 46 0 0 1 335 140"/>
+              <path class="a-dim" d="M175 30 Q232 12 290 30"/>
+              <path class="a-dim" d="M70 150 L70 96"/>
+              <text class="a-txt" x="342" y="106">PITCH</text>
+              <text class="a-txt" x="212" y="24">ROLL</text>
+              <text class="a-txt" x="34" y="88">HEAVE</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-status"><span class="state">Active · 2026 →</span></div>
+            <h3 class="card-title">NSF adolescent micromobility safety</h3>
+            <p class="card-text">An immersive VR e-scooter simulator on a 3-DOF motion platform, with road-surface variation, vibration and physical feedback. Multimodal AI predicts risk for adolescent riders.</p>
+            <div class="funding"><span class="badge">NSF CPS-CIR #2553776</span></div>
+            <ul class="tags"><li>VR simulator</li><li>Motion platform</li><li>Haptics</li><li>Multimodal AI</li></ul>
+          </div>
+        </article>
+
+        <!-- PROJECT: VDOT highway maintenance VR ============================ -->
+        <article class="card glass grab">
+          <div class="card-art">
+            <span class="art-label">Mixed reality · Vision Pro</span>
+            <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <path class="a-dim" d="M200 60 L30 200 M200 60 L370 200"/>
+              <path class="a-faint" d="M200 60 L120 200 M200 60 L280 200"/>
+              <line class="a-line a-flow" x1="200" y1="62" x2="200" y2="200"/>
+              <path class="a-hotfill" d="M262 186 L252 186 L257 168 Z M246 158 L238 158 L242 145 Z M233 136 L227 136 L230 126 Z M224 119 L219 119 L221.5 111 Z M216 105 L212 105 L214 99 Z"/>
+              <rect class="a-fill" x="270" y="40" width="104" height="40" rx="8"/>
+              <text class="a-txt" x="280" y="57">WORK ZONE</text>
+              <text class="a-txt-hot" x="280" y="71">TAPER 24 m</text>
+              <path class="a-dim" d="M282 80 L246 150"/>
+              <path class="a-line" d="M40 40 h34 a10 10 0 0 1 10 10 v4 a10 10 0 0 1 -10 10 h-6 l-6 -6 h-10 l-6 6 h-6 a10 10 0 0 1 -10 -10 v-4 a10 10 0 0 1 10 -10 z"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-status"><span class="state">Active · 2026 →</span></div>
+            <h3 class="card-title">VR training for highway maintenance</h3>
+            <p class="card-text">Immersive VR environments and Apple Vision Pro mixed-reality applications that train highway maintenance workers to stay safe in live work zones.</p>
+            <div class="funding"><span class="badge">VDOT</span></div>
+            <ul class="tags"><li>Unity</li><li>Apple Vision Pro</li><li>Mixed reality</li><li>Worker safety</li></ul>
+          </div>
+        </article>
+
+        <!-- PROJECT: VDOT roundabout evaluation ============================= -->
+        <article class="card glass grab">
+          <div class="card-art">
+            <span class="art-label">Explainable design review</span>
+            <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <path class="a-dim" d="M128 0 V58 M152 0 V58 M128 142 V200 M152 142 V200 M0 88 H82 M0 112 H82 M198 88 H232 M198 112 H232"/>
+              <circle class="a-line" cx="140" cy="100" r="52"/>
+              <circle class="a-fill" cx="140" cy="100" r="22"/>
+              <circle class="a-dim a-flow" cx="140" cy="100" r="38"/>
+              <rect class="a-fill" x="132" y="56" width="10" height="6" rx="1.5"/>
+              <rect class="a-hotfill" x="96" y="96" width="6" height="10" rx="1.5"/>
+              <text class="a-txt" x="10" y="80">LEE HWY</text>
+              <text class="a-txt" x="160" y="192">EUCLID AVE</text>
+              <rect class="a-fill" x="248" y="36" width="138" height="116" rx="10"/>
+              <text class="a-txt" x="260" y="56">LLM ▸ REASONING</text>
+              <path class="a-dim" d="M260 72 H368 M260 86 H350 M260 100 H362 M260 114 H330"/>
+              <text class="a-txt-hot" x="260" y="138">YIELD CONFLICT ↑</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-status"><span class="state">2024 – 2026</span></div>
+            <h3 class="card-title">Roundabout design evaluation</h3>
+            <p class="card-text">3D models of the Lee Highway and Euclid Avenue corridors. Behavioral risk analysis feeds an LLM reasoning layer that explains how each infrastructure design affects safety.</p>
+            <div class="funding"><span class="badge">VDOT</span></div>
+            <ul class="tags"><li>3D modeling</li><li>Behavioral risk</li><li>LLMs</li><li>Explainable AI</li></ul>
+          </div>
+        </article>
+
+        <!-- PROJECT: FHWA / Leidos Water Street ============================= -->
+        <article class="card glass grab">
+          <div class="card-art">
+            <span class="art-label">Digital twin · 2 configurations</span>
+            <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <line class="a-faint" x1="200" y1="20" x2="200" y2="190"/>
+              <path class="a-dim" d="M0 90 H76 M0 114 H76 M124 90 H200 M124 114 H200 M88 30 V80 M112 30 V80 M88 124 V180 M112 124 V180"/>
+              <circle class="a-line" cx="100" cy="102" r="26"/>
+              <circle class="a-fill" cx="100" cy="102" r="10"/>
+              <path class="a-dim" d="M200 90 H262 M200 114 H262 M338 90 H400 M338 114 H400 M286 30 V66 M314 30 V66 M286 138 V180 M314 138 V180"/>
+              <circle class="a-line" cx="300" cy="102" r="38"/>
+              <circle class="a-dim a-flow" cx="300" cy="102" r="30"/>
+              <circle class="a-fill" cx="300" cy="102" r="16"/>
+              <path class="a-line a-flow" d="M20 102 C60 102 70 76 100 76 S140 102 190 102"/>
+              <circle class="a-hotfill" cx="86" cy="79" r="6"/>
+              <text class="a-txt" x="16" y="30">CONFIG A</text>
+              <text class="a-txt" x="216" y="30">CONFIG B</text>
+              <text class="a-txt" x="16" y="190">WATER ST · CVL</text>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-status"><span class="state state--done">Completed · 2023 – 2024</span></div>
+            <h3 class="card-title">Water Street simulator</h3>
+            <p class="card-text">A high-fidelity 3D model of Water Street in Charlottesville with two roundabout configurations, for simulating bicycle–vehicle interactions under configurable traffic parameters.</p>
+            <div class="funding"><span class="badge">FHWA</span><span class="badge">Leidos</span></div>
+            <ul class="tags"><li>Unity 3D</li><li>Digital twin</li><li>Bike–vehicle interaction</li><li>Traffic simulation</li></ul>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============ SECTIONS STILL TO BUILD (next iterations) ============ -->
+    <!-- ============ PUBLICATIONS ============
+         HOW TO ADD A PAPER: copy one <li class="pub">…</li> block into the right group.
+         Wrap your own name in <b class="me">…</b>. Status pill classes:
+         pill--pub (published), pill--review (under review), pill--prep (in preparation), pill--pre (preprint).
+         Remember to update the count in that group's <span class="pub-count">. -->
+    <section id="publications" class="section">
+      <div class="section-head">
+        <p class="eyebrow">[ 02 ] Publications</p>
+        <h2 class="section-title">Papers</h2>
+        <p class="section-lede">Journal articles, conference papers and work in progress. Full list on <a class="text-link" href="https://scholar.google.com/citations?user=xjbQakIAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a>.</p>
+      </div>
+
+      <div class="pub-tools">
+        <div class="seg glass" role="group" aria-label="Filter publications">
+          <button class="is-active" data-filter="all" aria-pressed="true">All</button>
+          <button data-filter="published" aria-pressed="false">Published</button>
+          <button data-filter="review" aria-pressed="false">Under review</button>
+          <button data-filter="conference" aria-pressed="false">Conference</button>
+          <button data-filter="preprint" aria-pressed="false">Preprint</button>
+        </div>
+        <!-- EDIT: citation metrics — copy from Google Scholar now and then -->
+        <a class="metrics glass" href="https://scholar.google.com/citations?user=xjbQakIAAAAJ&amp;hl=en" target="_blank" rel="noopener" aria-label="Google Scholar metrics: 60 citations, h-index 5, i10-index 1">
+          <span class="metric"><b>60</b><small>Citations</small></span>
+          <span class="metric"><b>5</b><small>h-index</small></span>
+          <span class="metric"><b>1</b><small>i10</small></span>
+          <span class="metric-src">Scholar · Oct 2026 ↗</span>
+        </a>
+      </div>
+
+      <div class="pub-panel glass grab">
+
+        <!-- ---------- Published (journal) ---------- -->
+        <div class="pub-group" data-group="published">
+          <h3 class="pub-group-title">Journal articles <span class="pub-count">2</span></h3>
+          <ol class="pub-list">
+            <li class="pub">
+              <span class="pub-year">2026</span>
+              <div class="pub-main">
+                <a class="pub-title" href="https://doi.org/10.1177/03611981261485243" target="_blank" rel="noopener">The Use of Immersive Virtual Technologies for Public Engagement: State-of-Practice Review of US State Departments of Transportation</a>
+                <p class="pub-authors">C. de Cárdenas, <b class="me">A. Hosseini</b>, E. O’Connor, A. Heydarian, T. D. Chen</p>
+                <p class="pub-venue">Transportation Research Record</p>
+              </div>
+              <span class="pill pill--pub">Published</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2025</span>
+              <div class="pub-main">
+                <a class="pub-title" href="https://doi.org/10.1016/j.trf.2025.103362" target="_blank" rel="noopener">What Affects Pedestrian Street Crossing Decisions in Day and Night Scenarios? A Case Study in Charlottesville, Virginia</a>
+                <p class="pub-authors">A. Raida, <b class="me">A. Hosseini</b>, C. de Cárdenas, A. Mondschein, A. Heydarian, et al.</p>
+                <p class="pub-venue">Transportation Research Part F: Traffic Psychology and Behaviour, 115, 103362</p>
+              </div>
+              <span class="pill pill--pub">Published</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- ---------- Under review / in preparation ---------- -->
+        <div class="pub-group" data-group="review">
+          <h3 class="pub-group-title">Under review and in preparation <span class="pub-count">6</span></h3>
+          <ol class="pub-list">
+            <li class="pub">
+              <span class="pub-year">2026</span>
+              <div class="pub-main">
+                <span class="pub-title">RIDER: Rider-State-Informed Detection of Emerging Risk</span>
+                <p class="pub-authors"><b class="me">A. Hosseini</b>, et al.</p>
+                <p class="pub-venue">ACM CHI 2027 · Full paper</p>
+              </div>
+              <span class="pill pill--review">Under review</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2026</span>
+              <div class="pub-main">
+                <span class="pub-title">Cyclist Safety in Right-Hook Conflicts: A Virtual Reality Study</span>
+                <p class="pub-authors"><b class="me">A. Hosseini</b>, et al.</p>
+                <p class="pub-venue">Accident Analysis &amp; Prevention</p>
+              </div>
+              <span class="pill pill--review">Under review</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2026</span>
+              <div class="pub-main">
+                <span class="pub-title">Impact of Intersection Design and Lighting on Pedestrian Crossing Behavior</span>
+                <p class="pub-authors"><b class="me">A. Hosseini</b>, et al.</p>
+                <p class="pub-venue">Transportation Research Part F</p>
+              </div>
+              <span class="pill pill--review">Under review</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2026</span>
+              <div class="pub-main">
+                <span class="pub-title">Safety-Reliability and E-Scooter Intelligent Safety Assistance</span>
+                <p class="pub-authors"><b class="me">A. Hosseini</b>, et al.</p>
+                <p class="pub-venue">Transportation Research Part F</p>
+              </div>
+              <span class="pill pill--review">Under review</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2026</span>
+              <div class="pub-main">
+                <span class="pub-title">From Risk Prediction to Rider Warning</span>
+                <p class="pub-authors"><b class="me">A. Hosseini</b>, et al.</p>
+                <p class="pub-venue">IEEE Transactions on Intelligent Transportation Systems</p>
+              </div>
+              <span class="pill pill--prep">In prep · Fall 2026</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2026</span>
+              <div class="pub-main">
+                <span class="pub-title">Naturalistic Validation of a 3-DOF E-Scooter Simulator</span>
+                <p class="pub-authors"><b class="me">A. Hosseini</b>, et al.</p>
+                <p class="pub-venue">Transportation Research Part C</p>
+              </div>
+              <span class="pill pill--prep">In prep · Fall 2026</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- ---------- Conference papers ---------- -->
+        <div class="pub-group" data-group="conference">
+          <h3 class="pub-group-title">Conference papers <span class="pub-count">6</span></h3>
+          <ol class="pub-list">
+            <li class="pub">
+              <span class="pub-year">2025</span>
+              <div class="pub-main">
+                <span class="pub-title">Real-Time Roadway Obstacle Detection for Electric Scooters Using Deep Learning and Multi-Sensor Fusion</span>
+                <p class="pub-authors">Z. Zheng, <b class="me">A. Hosseini</b>, D. Chen, O. Shoghli, A. Heydarian</p>
+                <p class="pub-venue">International Conference on Transportation and Development (ICTD) 2025</p>
+              </div>
+              <span class="pill pill--pub">Published</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2025</span>
+              <div class="pub-main">
+                <span class="pub-title">Impact of Road Infrastructure and Traffic Scenarios on E-Scooterists’ Riding and Gaze Behavior</span>
+                <p class="pub-authors">D. Chen, <b class="me">A. Hosseini</b>, A. Smith, Z. Zheng, D. Xiang, A. Heydarian, O. Shoghli, et al.</p>
+                <p class="pub-venue">International Conference on Transportation and Development (ICTD) 2025, pp. 373–383</p>
+              </div>
+              <span class="pill pill--pub">Published</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2024</span>
+              <div class="pub-main">
+                <span class="pub-title">Performance Evaluation of Real-Time Object Detection for Electric Scooters</span>
+                <p class="pub-authors">D. Chen, <b class="me">A. Hosseini</b>, A. Smith, A. F. Nikkhah, A. Heydarian, O. Shoghli, et al.</p>
+                <p class="pub-venue">ASCE International Conference on Computing in Civil Engineering 2024</p>
+              </div>
+              <span class="pill pill--pub">Published</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2024</span>
+              <div class="pub-main">
+                <span class="pub-title">Integrated Dynamic Flexible Job Shop and AIV Scheduling: Deep Reinforcement Learning Approach Considering AIV Charging and Capacity Constraints</span>
+                <p class="pub-authors"><b class="me">A. Hosseini</b>, M. Feizabadi, Z. Yahouni</p>
+                <p class="pub-venue">IFIP Advances in Production Management Systems (APMS) 2024 · Springer</p>
+              </div>
+              <span class="pill pill--pub">Published</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2024</span>
+              <div class="pub-main">
+                <span class="pub-title">Multi-Agent Deep Q-Network with Layer-based Communication Channel for Autonomous Internal Logistics Vehicle Scheduling in Smart Manufacturing</span>
+                <p class="pub-authors">M. Feizabadi, <b class="me">A. Hosseini</b>, Z. Yahouni</p>
+                <p class="pub-venue">Innovative Intelligent Industrial Production and Logistics (IN4PL) 2024 · Springer</p>
+              </div>
+              <span class="pill pill--pub">Published</span>
+            </li>
+            <li class="pub">
+              <span class="pub-year">2023</span>
+              <div class="pub-main">
+                <span class="pub-title">Scheduling AIV Transporter Using Simulation-Based Supervised Learning: A Case Study on a Dynamic Job-Shop with Three Workstations</span>
+                <p class="pub-authors"><b class="me">A. Hosseini</b>, Z. Yahouni, S. M. G. Feizabadi</p>
+                <p class="pub-venue">22nd IFAC World Congress 2023 · Elsevier</p>
+              </div>
+              <span class="pill pill--pub">Published</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- ---------- Preprints ---------- -->
+        <div class="pub-group" data-group="preprint">
+          <h3 class="pub-group-title">Preprints <span class="pub-count">1</span></h3>
+          <ol class="pub-list">
+            <li class="pub">
+              <span class="pub-year">2025</span>
+              <div class="pub-main">
+                <a class="pub-title" href="https://arxiv.org/abs/2502.05117" target="_blank" rel="noopener">Adoption of AI-Assisted E-Scooters: The Role of Perceived Trust, Safety, and Demographic Drivers</a>
+                <p class="pub-authors">A. Kumar, <b class="me">A. Hosseini</b>, A. Azarbayjani, A. Heydarian, O. Shoghli</p>
+                <p class="pub-venue">arXiv:2502.05117</p>
+              </div>
+              <span class="pill pill--pre">Preprint</span>
+            </li>
+          </ol>
+        </div>
+
+      </div>
+    </section>
+    <!-- ============ CV ============ -->
+    <section id="cv" class="section">
+      <div class="section-head section-head--row">
+        <div>
+          <p class="eyebrow">[ 03 ] Curriculum vitae</p>
+          <h2 class="section-title">CV</h2>
+        </div>
+        <!-- EDIT: put your CV PDF at assets/Arman_Hosseini_CV.pdf -->
+        <a class="btn btn--primary" href="assets/Arman_Hosseini_CV.pdf" target="_blank" rel="noopener">Download full CV ↓</a>
+      </div>
+
+      <div class="cv-grid">
+
+        <!-- Education -->
+        <div class="cv-panel glass grab">
+          <h3 class="cv-panel-title">Education</h3>
+          <ol class="timeline">
+            <li class="tl-item is-now">
+              <span class="tl-when">2023 → present</span>
+              <h4 class="tl-what">PhD, Systems Engineering</h4>
+              <p class="tl-where">University of Virginia · GPA 3.95</p>
+              <!-- EDIT: dissertation title -->
+              <p class="tl-note"><span>Dissertation</span>Multimodal prediction of cyclist risk behavior using gaze, physiological sensing and immersive virtual reality. Advisor: Dr. Arsalan Heydarian.</p>
+            </li>
+            <li class="tl-item">
+              <span class="tl-when">2022</span>
+              <h4 class="tl-what">MSc, Industrial Engineering</h4>
+              <p class="tl-where">University of Grenoble Alpes, France · GPA 3.67</p>
+            </li>
+            <li class="tl-item">
+              <span class="tl-when">2020</span>
+              <h4 class="tl-what">BSc, Industrial Engineering</h4>
+              <p class="tl-where">Babol Noshirvani University of Technology, Iran · GPA 3.87</p>
+            </li>
+          </ol>
+        </div>
+
+        <div class="cv-stack">
+          <!-- Funding -->
+          <div class="cv-panel glass grab">
+            <h3 class="cv-panel-title">Research funding</h3>
+            <ul class="cv-list">
+              <li><span class="badge">NSF</span><div><b>CPS-CIR #2553776</b><small>Adolescent micromobility safety · 2026 →</small></div></li>
+              <li><span class="badge">VDOT</span><div><b>Virginia Department of Transportation</b><small>Two projects · 2024 →</small></div></li>
+              <li><span class="badge">FHWA</span><div><b>Leidos and Federal Highway Administration</b><small>Water Street simulator · 2023 – 2024</small></div></li>
+            </ul>
+          </div>
+          <!-- Awards -->
+          <div class="cv-panel glass grab">
+            <h3 class="cv-panel-title">Awards</h3>
+            <ul class="cv-list">
+              <li><span class="amt">$1,500</span><div><b>UVA SIE Student Travel Fellowship</b><small>TRB Annual Meeting · 2026</small></div></li>
+              <li><span class="amt">€5,000</span><div><b>IDEX Merit Scholarship</b><small>Grenoble INP · 2021</small></div></li>
+              <li><span class="amt">€8,000</span><div><b>IDEX Merit Scholarship</b><small>Grenoble INP · 2020</small></div></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="cv-panel glass grab cv-wide">
+          <h3 class="cv-panel-title">Technical skills</h3>
+          <div class="skill-grid">
+            <div class="skill">
+              <h4>AI and ML</h4>
+              <ul class="tags"><li>Transformers</li><li>LLMs</li><li>DQN / MARL</li><li>YOLO</li><li>PyTorch</li><li>TensorFlow</li><li>Scikit-learn</li></ul>
+            </div>
+            <div class="skill">
+              <h4>Simulation and VR</h4>
+              <ul class="tags"><li>Unity 3D (C#)</li><li>Hardware-in-the-loop</li><li>3D urban modeling</li><li>SUMO / Vissim</li><li>Apple Vision Pro</li></ul>
+            </div>
+            <div class="skill">
+              <h4>Sensing</h4>
+              <ul class="tags"><li>Tobii</li><li>Pupil Labs</li><li>EDA</li><li>HR / HRV</li><li>Multimodal signal processing</li></ul>
+            </div>
+            <div class="skill">
+              <h4>Programming</h4>
+              <ul class="tags"><li>Python (advanced)</li><li>MATLAB</li><li>R</li><li>SQL</li><li>Git</li><li>LaTeX</li><li>Linux</li><li>Docker</li></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mentorship & service -->
+        <div class="cv-panel glass grab cv-wide">
+          <h3 class="cv-panel-title">Mentorship and service</h3>
+          <!-- EDIT: numbers -->
+          <div class="stat-row">
+            <div class="stat"><b>11</b><span>students mentored<br>4 graduate · 7 undergraduate</span></div>
+            <div class="stat"><b>4</b><span>mentees became<br>co-authors</span></div>
+            <div class="stat"><b>5</b><span>disciplines<br>across mentees</span></div>
+            <div class="stat"><b>21</b><span>manuscripts<br>peer-reviewed</span></div>
+          </div>
+          <div class="service-grid">
+            <div>
+              <h4 class="mini-title">Leadership</h4>
+              <p><b>Graduate Research Operations Lead</b>, ORCL Lab, UVA · 2024 →</p>
+            </div>
+            <div>
+              <h4 class="mini-title">Peer review</h4>
+              <p>Transportation Research Record (7) · TRB Annual Meeting (6) · BTR (4) · ASCE (3) · IFAC (1)</p>
+            </div>
+            <div>
+              <h4 class="mini-title">Outreach</h4>
+              <p>UVA Link Lab Research Day demos (2023 – 2026) · M Cubed Academy high school mentorship</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <!-- ============ NEWS ============
+         HOW TO ADD NEWS: copy one <li class="log-item">…</li> to the TOP of the right year's list
+         (add a new <div class="log-year"> block for a new year). Move class "is-new" to the newest item.
+         Type tag classes: t-paper, t-grant, t-talk, t-award. -->
+    <section id="news" class="section">
+      <div class="section-head">
+        <p class="eyebrow">[ 04 ] Updates</p>
+        <h2 class="section-title">News</h2>
+      </div>
+
+      <div class="log glass grab">
+        <div class="log-bar">
+          <span class="log-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="mono">event.log</span>
+          <span class="mono log-live"><span class="live-dot"></span>latest first</span>
+        </div>
+
+        <div class="log-year">
+          <h3 class="log-year-title">2026</h3>
+          <ol class="log-list">
+            <li class="log-item is-new">
+              <time datetime="2026-10">Oct</time>
+              <span class="log-tag t-paper">Paper</span>
+              <p>RIDER paper submitted to <b>ACM CHI 2027</b> as a full paper.</p>
+              <a class="log-link" href="#research" aria-label="See the RIDER project">→</a>
+            </li>
+            <li class="log-item">
+              <time datetime="2026-06">Jun</time>
+              <span class="log-tag t-grant">Grant</span>
+              <p><b>NSF CPS grant awarded</b> for adolescent micromobility safety (#2553776).</p>
+              <a class="log-link" href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2553776" target="_blank" rel="noopener" aria-label="NSF award page">↗</a>
+            </li>
+            <li class="log-item">
+              <time datetime="2026-03">Mar</time>
+              <span class="log-tag t-paper">Paper</span>
+              <p>Paper on immersive virtual technologies for public engagement published in <b>Transportation Research Record</b>.</p>
+              <a class="log-link" href="https://doi.org/10.1177/03611981261485243" target="_blank" rel="noopener" aria-label="Read the paper">↗</a>
+            </li>
+            <li class="log-item">
+              <time datetime="2026-01">Jan</time>
+              <span class="log-tag t-talk">Talk</span>
+              <p>Presented at the <b>TRB Annual Meeting</b>, Washington, D.C., with a UVA SIE travel fellowship.</p>
+              <span class="log-link" aria-hidden="true"></span>
+            </li>
+          </ol>
+        </div>
+
+        <div class="log-year">
+          <h3 class="log-year-title">2025</h3>
+          <ol class="log-list">
+            <li class="log-item">
+              <time datetime="2025-06">Jun</time>
+              <span class="log-tag t-talk">Poster</span>
+              <p>Poster at <b>ICTD 2025</b>, Glendale, Arizona.</p>
+              <span class="log-link" aria-hidden="true"></span>
+            </li>
+            <li class="log-item">
+              <time datetime="2025-01">Jan</time>
+              <span class="log-tag t-paper">Paper</span>
+              <p>Pedestrian crossing decisions paper published in <b>Transportation Research Part F</b>.</p>
+              <a class="log-link" href="https://doi.org/10.1016/j.trf.2025.103362" target="_blank" rel="noopener" aria-label="Read the paper">↗</a>
+            </li>
+          </ol>
+        </div>
+
+        <div class="log-year">
+          <h3 class="log-year-title">2024</h3>
+          <ol class="log-list">
+            <li class="log-item">
+              <time datetime="2024-07">Jul</time>
+              <span class="log-tag t-talk">Talk</span>
+              <p>Talk at <b>ASCE Computing in Civil Engineering</b>, Pittsburgh.</p>
+              <span class="log-link" aria-hidden="true"></span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+    <!-- ============ TEACHING ============
+         HOW TO ADD: copy one <article class="teach">…</article> block; newest first. -->
+    <section id="teaching" class="section">
+      <div class="section-head">
+        <p class="eyebrow">[ 05 ] Teaching</p>
+        <h2 class="section-title">Teaching</h2>
+        <p class="section-lede">Supporting courses across three countries, from immersive world-building to AI for decision making.</p>
+      </div>
+
+      <div class="teach-grid">
+        <article class="teach glass grab">
+          <div class="teach-top"><span class="teach-code">CE 4500</span><span class="state">Spring 2026</span></div>
+          <h3 class="teach-title">World Building with VR/AR</h3>
+          <p class="teach-role">Instructional Support</p>
+          <p class="teach-where">University of Virginia</p>
+        </article>
+        <article class="teach glass grab">
+          <div class="teach-top"><span class="teach-code">AI · ML</span><span class="state state--done">Fall and Spring 2021</span></div>
+          <h3 class="teach-title">AI and ML for Decision Aiding</h3>
+          <p class="teach-role">Instructional Support</p>
+          <p class="teach-where">Grenoble INP, France</p>
+        </article>
+        <article class="teach glass grab">
+          <div class="teach-top"><span class="teach-code">IE</span><span class="state state--done">Fall 2019</span></div>
+          <h3 class="teach-title">Inventory Control and Planning</h3>
+          <p class="teach-role">Teaching Assistant</p>
+          <p class="teach-where">Babol Noshirvani University of Technology, Iran</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section id="contact" class="section">
+      <div class="contact glass grab">
+        <div class="contact-main">
+          <p class="eyebrow">[ 06 ] Contact</p>
+          <h2 class="section-title">Let’s build safer <span class="nowrap">human–machine</span> systems.</h2>
+          <!-- EDIT: contact blurb -->
+          <p class="section-lede">I’m open to research collaborations, talks and conversations about multimodal sensing, immersive simulation and human-centered AI for safety.</p>
+          <div class="email-row">
+            <a class="email" href="mailto:ufy5tc@virginia.edu">ufy5tc@virginia.edu</a>
+            <button class="btn copy-btn" type="button" data-copy="ufy5tc@virginia.edu" aria-live="polite">Copy</button>
+          </div>
+          <p class="contact-loc mono"><span class="live-dot"></span>Charlottesville, VA · ORCL Lab, University of Virginia</p>
+        </div>
+
+        <ul class="contact-links">
+          <li>
+            <a class="contact-tile" href="mailto:ufy5tc@virginia.edu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              <span><b>Email</b><small>Fastest way to reach me</small></span><i aria-hidden="true">↗</i>
+            </a>
+          </li>
+          <li>
+            <a class="contact-tile" href="https://scholar.google.com/citations?user=xjbQakIAAAAJ&amp;hl=en" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"/></svg>
+              <span><b>Google Scholar</b><small>Publications and citations</small></span><i aria-hidden="true">↗</i>
+            </a>
+          </li>
+          <li>
+            <a class="contact-tile" href="https://www.linkedin.com/in/armanhoss96" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7 M8 7v.01 M12 17v-4a2 2 0 0 1 4 0v4 M12 10v7"/></svg>
+              <span><b>LinkedIn</b><small>Professional profile</small></span><i aria-hidden="true">↗</i>
+            </a>
+          </li>
+          <li>
+            <a class="contact-tile" href="assets/Arman_Hosseini_CV.pdf" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z M14 3v5h5 M12 11v6 M9 14l3 3 3-3"/></svg>
+              <span><b>Curriculum vitae</b><small>PDF download</small></span><i aria-hidden="true">↓</i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">© <span id="year">2026</span> Arman Hosseini · Charlottesville, VA</footer>
+
+  <!-- ============ DOCK (bottom navigation) ============
+       EDIT: add or remove sections here; href must match a section id -->
+  <nav class="dock glass" aria-label="Sections">
+    <a href="#home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></a>
+    <a href="#research"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z M12 12l8-4.5 M12 12v9 M12 12L4 7.5"/></svg><span>Research</span></a>
+    <a href="#publications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z M14 3v5h5 M9 13h6 M9 17h6"/></svg><span>Papers</span></a>
+    <a href="#cv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h4 M14 14h4"/></svg><span>CV</span></a>
+    <a href="#news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg><span>News</span></a>
+    <a href="#teaching"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"/></svg><span>Teaching</span></a>
+    <a href="#contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>Contact</span></a>
+  </nav>
+
+  <script src="script.js?v=2" defer></script>
+</body>
+</html>

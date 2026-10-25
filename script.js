@@ -503,6 +503,11 @@
     history.replaceState(null, '', `#${id}`);
   }
   document.querySelectorAll('[data-case]').forEach((el) => el.addEventListener('click', () => openCase(el.dataset.case, el)));
+  // in-window jump links (e.g. "▶ 2 videos") scroll the window instead of changing the URL
+  document.querySelectorAll('[data-scroll-to]').forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById(a.dataset.scrollTo).scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+  }));
   if (cases.has(location.hash.slice(1))) openCase(location.hash.slice(1));
 
   // YouTube: show a poster until clicked, then load the privacy-friendly embed

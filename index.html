@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <!-- EDIT: bump ?v= on style.css and script.js after changing them, so visitors get the new files -->
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -219,6 +219,7 @@
           <button class="card-art card-art--photo" type="button" data-case="case-vdot" aria-label="Open the VDOT roundabout case study">
             <img src="assets/projects/vdot/cover-thumb.jpg" srcset="assets/projects/vdot/cover-thumb.jpg 480w, assets/projects/vdot/cover.jpg 1280w" sizes="(max-width: 720px) 100vw, 560px" alt="A VDOT staff member rides the VR bicycle simulator while screens show the proposed roundabout" loading="lazy" width="480" height="360">
             <span class="art-label">Design review in VR · Bristol, VA</span>
+            <span class="art-video">▶ 2 videos</span>
             <span class="art-open">Case study →</span>
           </button>
           <div class="card-body">
@@ -794,6 +795,7 @@
           <p class="eyebrow">Case study · VDOT · VTRC · 2024 – 2026</p>
           <h2 class="case-title" id="case-vdot-title">VR for roundabout design review and public engagement</h2>
         </div>
+        <a class="chip chip--video" href="#case-vdot-videos" data-scroll-to="case-vdot-videos">▶ 2 videos</a>
         <button class="case-close" type="button" aria-label="Close case study">✕</button>
       </header>
 
@@ -815,6 +817,15 @@
             <button type="button" data-full="assets/projects/vdot/survey-map.jpg" data-cap="National survey of DOTs, universities and consulting firms on immersive technology for public engagement."><img src="assets/projects/vdot/survey-map-thumb.jpg" alt="US map of survey respondents" loading="lazy"></button>
           </div>
         </figure>
+
+        <!-- EDIT: videos — data-yt is the YouTube video ID -->
+        <div class="case-videos" id="case-vdot-videos">
+          <h3>▶ Watch the simulations</h3>
+          <div class="video-grid">
+            <button class="yt" type="button" data-yt="XPaFIynD-YE" style="background-image:url('https://i.ytimg.com/vi/XPaFIynD-YE/hqdefault.jpg')"><span class="yt-play" aria-hidden="true">▶</span><span class="yt-title">Bicycle simulator in VR</span></button>
+            <button class="yt" type="button" data-yt="pNu9L2yFjWA" style="background-image:url('https://i.ytimg.com/vi/pNu9L2yFjWA/hqdefault.jpg')"><span class="yt-play" aria-hidden="true">▶</span><span class="yt-title">Pedestrian crossing in VR</span></button>
+          </div>
+        </div>
 
         <div class="case-facts">
           <div><b>12</b><span>VDOT staff tried the simulators at design review</span></div>
@@ -843,14 +854,6 @@
           </section>
         </div>
 
-        <div class="case-videos">
-          <h3>Videos</h3>
-          <div class="video-grid">
-            <button class="yt" type="button" data-yt="XPaFIynD-YE" style="background-image:url('https://i.ytimg.com/vi/XPaFIynD-YE/hqdefault.jpg')"><span class="yt-play" aria-hidden="true">▶</span><span class="yt-title">Bicycle simulator in VR</span></button>
-            <button class="yt" type="button" data-yt="pNu9L2yFjWA" style="background-image:url('https://i.ytimg.com/vi/pNu9L2yFjWA/hqdefault.jpg')"><span class="yt-play" aria-hidden="true">▶</span><span class="yt-title">Pedestrian crossing in VR</span></button>
-          </div>
-        </div>
-
         <dl class="case-meta">
           <!-- EDIT: confirm the wording of your role -->
           <div><dt>My role</dt><dd>Graduate research assistant: simulation development and gaze analysis</dd></div>
@@ -875,6 +878,6 @@
     <a href="#contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>Contact</span></a>
   </nav>
 
-  <script src="script.js?v=4" defer></script>
+  <script src="script.js?v=5" defer></script>
 </body>
 </html>

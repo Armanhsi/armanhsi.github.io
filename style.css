@@ -768,6 +768,17 @@ a.pub-title:hover { color: var(--accent); }
 .case--photos .case-scroll { padding-bottom: var(--s-5); }
 .case--photos .gallery-stage { aspect-ratio: 16 / 10; }
 
+/* demo video window */
+.demo-stage {
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  background: rgba(3, 9, 18, 0.7);
+  border: 1px solid rgba(210, 236, 255, 0.08);
+  overflow: hidden;
+}
+.demo-video { display: block; width: 100%; height: 100%; object-fit: contain; }
+.demo-lede { margin: var(--s-4) 0 0; color: var(--ink); font-size: 17px; }
+
 @media (max-width: 860px) {
   .press-grid { grid-template-columns: 1fr; }
   .press-card { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: var(--s-3); align-items: center; padding: 10px; }

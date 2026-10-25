@@ -481,6 +481,7 @@
     const cleanup = () => {
       // stop any playing video by swapping the iframe back to its poster
       dialog.querySelectorAll('.yt-frame').forEach((f) => f.replaceWith(f._poster));
+      dialog.querySelectorAll('video').forEach((v) => v.pause());
       if (location.hash === `#${dialog.id}`) history.replaceState(null, '', location.pathname + location.search);
       if (dialog._opener) { dialog._opener.focus(); dialog._opener = null; }
     };
@@ -501,6 +502,9 @@
     if (opener && opener.dataset.index) dialog._show(Number(opener.dataset.index));
     dialog.showModal();
     dialog.querySelector('.case-scroll').scrollTop = 0;
+    // demo videos start muted (autoplay rules); the viewer can unmute from the controls
+    const video = dialog.querySelector('video');
+    if (video) video.play().catch(() => {});
     history.replaceState(null, '', `#${id}`);
   }
   document.querySelectorAll('[data-case]').forEach((el) => el.addEventListener('click', () => openCase(el.dataset.case, el)));

@@ -438,7 +438,87 @@
   }));
 
   /* ------------------------------------------------------------------
-     9. Charlottesville clock + footer year
+     9. Case study windows: open/close, gallery, lazy YouTube, deep links
+     ------------------------------------------------------------------ */
+  function setupGallery(dialog) {
+    const main = dialog.querySelector('.gallery-main');
+    const cap = dialog.querySelector('.gallery-cap');
+    const thumbs = [...dialog.querySelectorAll('.gallery-thumbs button')];
+    if (!main || !thumbs.length) return () => {};
+    let index = 0;
+    const show = (i) => {
+      index = (i + thumbs.length) % thumbs.length;
+      const t = thumbs[index];
+      if (main.getAttribute('src') !== t.dataset.full) {
+        main.classList.add('is-loading');
+        main.onload = () => main.classList.remove('is-loading');
+        main.src = t.dataset.full;
+      }
+      main.alt = t.querySelector('img').alt;
+      cap.innerHTML = `<span class="count">${String(index + 1).padStart(2, '0')} / ${String(thumbs.length).padStart(2, '0')}</span>`;
+      cap.append(t.dataset.cap || '');
+      thumbs.forEach((b, j) => b.classList.toggle('is-active', j === index));
+      t.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    };
+    thumbs.forEach((b, i) => b.addEventListener('click', () => show(i)));
+    dialog.querySelector('.gallery-nav.prev').addEventListener('click', () => show(index - 1));
+    dialog.querySelector('.gallery-nav.next').addEventListener('click', () => show(index + 1));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+    show(0);
+    return show;
+  }
+
+  const cases = new Map();
+  document.querySelectorAll('dialog.case').forEach((dialog) => {
+    cases.set(dialog.id, dialog);
+    let galleryReady = false;
+    dialog.addEventListener('open-case', () => {
+      if (!galleryReady) { setupGallery(dialog); galleryReady = true; }
+    });
+    // cleanup runs directly (the 'close' event can arrive late), and is safe to run twice
+    const cleanup = () => {
+      // stop any playing video by swapping the iframe back to its poster
+      dialog.querySelectorAll('.yt-frame').forEach((f) => f.replaceWith(f._poster));
+      if (location.hash === `#${dialog.id}`) history.replaceState(null, '', location.pathname + location.search);
+      if (dialog._opener) { dialog._opener.focus(); dialog._opener = null; }
+    };
+    const closeCase = () => { dialog.close(); cleanup(); };
+    dialog.querySelector('.case-close').addEventListener('click', closeCase);
+    // click on the dimmed backdrop (outside the window) closes it
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) closeCase(); });
+    dialog.addEventListener('cancel', (e) => { e.preventDefault(); closeCase(); }); // Escape key
+    dialog.addEventListener('close', cleanup);
+  });
+
+  function openCase(id, opener) {
+    const dialog = cases.get(id);
+    if (!dialog || dialog.open) return;
+    dialog._opener = opener || null;
+    dialog.dispatchEvent(new Event('open-case'));
+    dialog.showModal();
+    dialog.querySelector('.case-scroll').scrollTop = 0;
+    history.replaceState(null, '', `#${id}`);
+  }
+  document.querySelectorAll('[data-case]').forEach((el) => el.addEventListener('click', () => openCase(el.dataset.case, el)));
+  if (cases.has(location.hash.slice(1))) openCase(location.hash.slice(1));
+
+  // YouTube: show a poster until clicked, then load the privacy-friendly embed
+  document.querySelectorAll('.yt[data-yt]').forEach((btn) => btn.addEventListener('click', () => {
+    const frame = document.createElement('iframe');
+    frame.className = 'yt-frame';
+    frame.src = `https://www.youtube-nocookie.com/embed/${btn.dataset.yt}?autoplay=1&rel=0`;
+    frame.title = btn.querySelector('.yt-title').textContent;
+    frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    frame.allowFullscreen = true;
+    frame._poster = btn;
+    btn.replaceWith(frame);
+  }));
+
+  /* ------------------------------------------------------------------
+     10. Charlottesville clock + footer year
      ------------------------------------------------------------------ */
   const clockEl = document.getElementById('clock');
   const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: false });

@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <!-- EDIT: bump ?v= on style.css and script.js after changing them, so visitors get the new files -->
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 
@@ -569,6 +569,33 @@
         <h2 class="section-title">News</h2>
       </div>
 
+      <!-- IN THE NEWS photo strip
+           HOW TO ADD: put a photo in assets/news/ (plus a -thumb.jpg), copy one <figure class="press-card">,
+           set data-index to its position, and add a matching thumb button in <dialog id="case-press">. -->
+      <div class="press">
+        <h3 class="press-title">In the news · UVA Link Lab Research Day</h3>
+        <div class="press-grid">
+          <figure class="press-card glass grab">
+            <button class="press-photo" type="button" data-case="case-press" data-index="0" aria-label="View photo: Link Lab Research Day 2026">
+              <img src="assets/news/research-day-2026-thumb.jpg" alt="Arman explains the VR bike simulator to a group of visitors" loading="lazy" width="640" height="360">
+            </button>
+            <figcaption><span class="press-year">2026</span>Walking visitors through the VR bike simulator at Link Lab Research Day.</figcaption>
+          </figure>
+          <figure class="press-card glass grab">
+            <button class="press-photo" type="button" data-case="case-press" data-index="1" aria-label="View photo: Research Day 2024 reception">
+              <img src="assets/news/research-day-2024-thumb.jpg" alt="Arman beside a visitor riding the VR bike simulator, with students watching" loading="lazy" width="508" height="381">
+            </button>
+            <figcaption><span class="press-year">2024</span>Sharing my research on the ORCL VR bike simulator at the Research Day Industry–Graduate Student Reception.</figcaption>
+          </figure>
+          <figure class="press-card glass grab">
+            <button class="press-photo" type="button" data-case="case-press" data-index="2" aria-label="View photo: Link Lab Research Day 2023">
+              <img src="assets/news/research-day-2023-thumb.jpg" alt="Arman adjusts the VR headset for a visitor on the bike simulator" loading="lazy" width="508" height="381">
+            </button>
+            <figcaption><span class="press-year">2023</span>Demonstrating the VR bike simulator at Link Lab Research Day.</figcaption>
+          </figure>
+        </div>
+      </div>
+
       <div class="log glass grab">
         <div class="log-bar">
           <span class="log-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -717,6 +744,34 @@
   <!-- ============ CASE STUDIES (open from the Research cards) ============
        Each is a <dialog>. Gallery: each thumb button carries data-full (large image)
        and data-cap (caption). Images live in assets/projects/<project>/. -->
+
+  <!-- Photo viewer: In the news (opens from the News photo strip) -->
+  <dialog class="case case--photos" id="case-press" aria-labelledby="case-press-title">
+    <div class="case-window glass">
+      <header class="case-head">
+        <div>
+          <p class="eyebrow">In the news · UVA Link Lab</p>
+          <h2 class="case-title" id="case-press-title">Research Day demos</h2>
+        </div>
+        <button class="case-close" type="button" aria-label="Close photos">✕</button>
+      </header>
+      <div class="case-scroll">
+        <figure class="gallery">
+          <div class="gallery-stage">
+            <img class="gallery-main" src="assets/news/research-day-2026.jpg" alt="" loading="lazy">
+            <button class="gallery-nav prev" type="button" aria-label="Previous photo">‹</button>
+            <button class="gallery-nav next" type="button" aria-label="Next photo">›</button>
+          </div>
+          <figcaption class="gallery-cap"></figcaption>
+          <div class="gallery-thumbs">
+            <button type="button" data-full="assets/news/research-day-2026.jpg" data-cap="Link Lab Research Day 2026: walking visitors through the VR bike simulator."><img src="assets/news/research-day-2026-thumb.jpg" alt="Arman explains the VR bike simulator to a group of visitors" loading="lazy"></button>
+            <button type="button" data-full="assets/news/research-day-2024.jpg" data-cap="Graduate student Arman Hosseini shares his research using the ORCL Virtual Reality Bike Simulator during the 2024 Research Day Industry–Graduate Student Reception. His work at UVA Link Lab explores how road users behave and react in immersive virtual environments."><img src="assets/news/research-day-2024-thumb.jpg" alt="Arman beside a visitor riding the VR bike simulator, with students watching" loading="lazy"></button>
+            <button type="button" data-full="assets/news/research-day-2023.jpg" data-cap="Link Lab Research Day 2023: graduate student Arman Hosseini Aliabad demonstrates the Virtual Reality Bike Simulator."><img src="assets/news/research-day-2023-thumb.jpg" alt="Arman adjusts the VR headset for a visitor on the bike simulator" loading="lazy"></button>
+          </div>
+        </figure>
+      </div>
+    </div>
+  </dialog>
 
   <!-- Case study: Water Street (FHWA / Leidos) -->
   <dialog class="case" id="case-waterst" aria-labelledby="case-waterst-title">
@@ -878,6 +933,6 @@
     <a href="#contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>Contact</span></a>
   </nav>
 
-  <script src="script.js?v=5" defer></script>
+  <script src="script.js?v=6" defer></script>
 </body>
 </html>

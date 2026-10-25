@@ -474,9 +474,8 @@
   const cases = new Map();
   document.querySelectorAll('dialog.case').forEach((dialog) => {
     cases.set(dialog.id, dialog);
-    let galleryReady = false;
     dialog.addEventListener('open-case', () => {
-      if (!galleryReady) { setupGallery(dialog); galleryReady = true; }
+      if (!dialog._show) dialog._show = setupGallery(dialog);
     });
     // cleanup runs directly (the 'close' event can arrive late), and is safe to run twice
     const cleanup = () => {
@@ -498,6 +497,8 @@
     if (!dialog || dialog.open) return;
     dialog._opener = opener || null;
     dialog.dispatchEvent(new Event('open-case'));
+    // data-index on the opener starts the gallery at that photo
+    if (opener && opener.dataset.index) dialog._show(Number(opener.dataset.index));
     dialog.showModal();
     dialog.querySelector('.case-scroll').scrollTop = 0;
     history.replaceState(null, '', `#${id}`);

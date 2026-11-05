@@ -1003,10 +1003,31 @@ a.chip--video:hover { background: var(--hot); color: #1a0703; border-color: var(
 .contact {
   display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   gap: var(--s-7);
-  padding: clamp(28px, 5vw, 64px);
+  --pad: clamp(28px, 5vw, 64px);
+  padding: var(--pad);
   border-radius: var(--r-window);
   background: var(--glass-strong);
 }
+/* full-bleed banner photo across the top of the contact window */
+.contact-photo {
+  grid-column: 1 / -1;
+  position: relative;
+  margin: calc(var(--pad) * -1) calc(var(--pad) * -1) 0;
+  aspect-ratio: 1440 / 620;
+  border-radius: var(--r-window) var(--r-window) 0 0;
+  overflow: hidden;
+}
+.contact-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 40%; }
+.contact-photo::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 55%, rgba(5, 9, 18, 0.85));
+  pointer-events: none;
+}
+.contact-photo figcaption {
+  position: absolute; left: var(--pad); bottom: 14px; z-index: 1;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+}
+@media (max-width: 720px) { .contact-photo { aspect-ratio: 4 / 3; } }
 .contact .section-title { font-size: clamp(28px, 3vw, 40px); line-height: 1.05; margin: var(--s-3) 0 var(--s-4); text-wrap: balance; }
 .nowrap { white-space: nowrap; }
 @media (max-width: 720px) { .nowrap { white-space: normal; } }

@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <!-- EDIT: bump ?v= on style.css and script.js after changing them, so visitors get the new files -->
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
@@ -53,7 +53,7 @@
         <article class="window window--main glass grab">
           <!-- EDIT: headshot — replace assets/headshot.jpg (square photo, about 600×600) -->
           <div class="avatar">
-            <img src="assets/headshot.jpg" alt="Portrait of Arman Hosseini" width="591" height="591">
+            <img src="assets/headshot.jpg?v=2" alt="Portrait of Arman Hosseini" width="600" height="600">
           </div>
           <!-- EDIT: title line above your name -->
           <p class="eyebrow">PhD Candidate · Systems &amp; Information Engineering</p>
@@ -717,6 +717,11 @@
     <!-- ============ CONTACT ============ -->
     <section id="contact" class="section">
       <div class="contact glass grab">
+        <!-- EDIT: contact banner photo — assets/lab-bike.jpg (wide, about 1440×620) -->
+        <figure class="contact-photo">
+          <img src="assets/lab-bike-sm.jpg" srcset="assets/lab-bike-sm.jpg 720w, assets/lab-bike.jpg 1440w" sizes="(max-width: 1200px) 100vw, 1200px" alt="Arman lifts a VR headset while sitting on the bike simulator in the ORCL lab, with the simulation on a screen behind him" loading="lazy" width="1440" height="620">
+          <figcaption class="mono">ORCL VR bike simulator lab · UVA</figcaption>
+        </figure>
         <div class="contact-main">
           <p class="eyebrow">[ 06 ] Contact</p>
           <h2 class="section-title">Let’s build safer <span class="nowrap">human–machine</span> systems.</h2>
